@@ -249,7 +249,6 @@ var _ = Describe("Proxy", func() {
 		Expect(resp.StatusCode).To(Equal(http.StatusOK))
 	})
 
-
 	It("responds to http/1.1 with absolute-form request that has encoded characters in the path", func() {
 		ln := registerHandler(r, "test.io/my%20path/your_path", func(conn *test_util.HttpConn) {
 			conn.CheckLine("GET http://test.io/my%20path/your_path HTTP/1.1")
@@ -600,6 +599,38 @@ var _ = Describe("Proxy", func() {
 		Expect(answer).To(Equal("https"))
 
 		conn.ReadResponse()
+	})
+
+	Context("Force Forwarded Proto config option is set", func() {
+		BeforeEach(func() {
+			conf.ForceForwardedProtoHeader = "https"
+		})
+		It("uses config option for X-Forwarded-Proto if present", func() {
+			done := make(chan string)
+
+			ln := registerHandler(r, "app", func(conn *test_util.HttpConn) {
+				req, err := http.ReadRequest(conn.Reader)
+				Expect(err).NotTo(HaveOccurred())
+
+				resp := test_util.NewResponse(http.StatusOK)
+				conn.WriteResponse(resp)
+				conn.Close()
+
+				done <- req.Header.Get("X-Forwarded-Proto")
+			})
+			defer ln.Close()
+
+			conn := dialProxy(proxyServer)
+
+			req := test_util.NewRequest("GET", "app", "/", nil)
+			conn.WriteRequest(req)
+
+			var answer string
+			Eventually(done).Should(Receive(&answer))
+			Expect(answer).To(Equal("https"))
+
+			conn.ReadResponse()
+		})
 	})
 
 	It("emits HTTP startstop events", func() {

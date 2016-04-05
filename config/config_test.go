@@ -265,6 +265,14 @@ token_fetcher_expiration_buffer_time: 40
 			Expect(config.TokenFetcherRetryIntervalInSeconds).To(Equal(5))
 			Expect(config.TokenFetcherExpirationBufferTimeInSeconds).To(Equal(int64(30)))
 		})
+
+		It("sets the proxy forwarded proto header", func() {
+			var b = []byte(`
+force_forwarded_proto_header: https
+`)
+			config.Initialize(b)
+			Expect(config.ForceForwardedProtoHeader).To(Equal("https"))
+		})
 	})
 
 	Describe("Process", func() {

@@ -3,6 +3,7 @@ go:
   - 1.5
   - tip
 
+go_import_path: github.com/cloudfoundry/gorouter
 matrix:
   allow_failures:
     - go: tip

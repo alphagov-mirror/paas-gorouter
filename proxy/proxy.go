@@ -286,6 +286,10 @@ func (p *proxy) setupProxyRequest(target *http.Request) {
 	target.URL.ForceQuery = false
 	target.URL.Opaque = target.RequestURI
 
+	if clientIP, _, err := net.SplitHostPort(target.RemoteAddr); err == nil {
+		target.Header.Set("X-Real-IP", clientIP)
+	}
+
 	if strings.HasPrefix(target.RequestURI, "//") {
 		target.URL.Opaque = "//" + target.Host + target.URL.Path
 	}

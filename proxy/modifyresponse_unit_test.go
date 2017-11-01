@@ -96,6 +96,11 @@ var _ = Describe("modifyResponse", func() {
 			})
 		})
 	})
+	It("includes our static headers", func() {
+		err := p.modifyResponse(resp)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(resp.Header.Get("Strict-Transport-Security")).To(Equal("max-age=31536000; includeSubDomains; preload"))
+	})
 	Describe("Vcap Trace Headers", func() {
 		It("does not add any headers when trace key is empty", func() {
 			err := p.modifyResponse(resp)

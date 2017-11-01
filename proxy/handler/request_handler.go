@@ -204,6 +204,7 @@ func (h *RequestHandler) setRequestXForwardedFor() {
 			clientIP = strings.Join(prior, ", ") + ", " + clientIP
 		}
 		h.request.Header.Set("X-Forwarded-For", clientIP)
+		h.request.Header.Set("X-Real-IP", clientIP)
 	}
 }
 

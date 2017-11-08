@@ -37,7 +37,9 @@ func (p *proxy) modifyResponse(res *http.Response) error {
 		res.Header.Set(router_http.CfRouteEndpointHeader, endpoint.CanonicalAddr())
 	}
 
-	res.Header.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
+	if res.Header.Get("Strict-Transport-Security") == "" {
+		res.Header.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
+	}
 
 	return nil
 }

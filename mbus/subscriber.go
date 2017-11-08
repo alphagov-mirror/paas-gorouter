@@ -13,13 +13,11 @@ import (
 	"code.cloudfoundry.org/localip"
 	"code.cloudfoundry.org/routing-api/models"
 
-	"github.com/mailru/easyjson"
 	"github.com/nats-io/nats"
 	"github.com/uber-go/zap"
 )
 
 // RegistryMessage defines the format of a route registration/unregistration
-// easyjson:json
 type RegistryMessage struct {
 	Host                    string            `json:"host"`
 	Port                    uint16            `json:"port"`
@@ -233,7 +231,7 @@ func (s *Subscriber) sendStartMessage() error {
 func createRegistryMessage(data []byte) (*RegistryMessage, error) {
 	var msg RegistryMessage
 
-	jsonErr := easyjson.Unmarshal(data, &msg)
+	jsonErr := json.Unmarshal(data, &msg)
 	if jsonErr != nil {
 		return nil, jsonErr
 	}
